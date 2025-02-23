@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'baseMain.html.twig' %}
 
 {% block title %}Login{% endblock %}
 
@@ -58,6 +58,7 @@
             </form>
 
             <div class="text-center mt-3">
+                <p>Not a member? <a href="{{path('app_signup')}}">Sign up here.</a></p>
                 <p>Forgot your password? <a href="#">Reset it here.</a></p>
             </div>
         </div>

@@ -31,10 +31,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adress = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, nullable: true)]
     private ?string $role = null;
 
-    #[ORM\Column(type: "json")]
+    #[ORM\Column(type: "json", nullable: true)]
     private array $roles = [];
 
     public function getId(): ?int
