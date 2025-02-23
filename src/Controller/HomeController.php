@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/home')]
 class HomeController extends AbstractController
 {
+    //Association
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
