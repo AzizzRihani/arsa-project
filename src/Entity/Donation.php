@@ -5,6 +5,7 @@ use App\Entity\Event;
 use App\Repository\DonationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: DonationRepository::class)]
 class Donation
@@ -63,6 +64,9 @@ class Donation
     #[ORM\JoinColumn(nullable: true)]
     private ?Event $event = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
 
     public function getEvent(): ?Event
     {
@@ -237,6 +241,17 @@ class Donation
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }

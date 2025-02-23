@@ -15,7 +15,17 @@ class ProduitRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Produit::class);
     }
-
+ /**
+     * Get the latest products ordered by dateAjout (most recent first)
+     */
+    public function findLatestProducts(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.dateAjout', 'DESC')  // Order by newest first
+            ->setMaxResults($limit)           // Limit the number of results
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return Produit[] Returns an array of Produit objects
 //     */

@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Regex;
 
 
 class AddProduitType extends AbstractType
@@ -33,7 +34,13 @@ class AddProduitType extends AbstractType
                     'max' => 255,
                     'minMessage' => 'Le nom doit contenir au moins {{ limit }} caractères.',
                     'maxMessage' => 'Le nom ne peut pas dépasser {{ limit }} caractères.',
+                ]),
+                new Regex([
+                    'pattern' => '/^(?!.*[\$\@\#\%\&\*\!])[\p{L}0-9\s]+$/u',
+                    'message' => 'Le nom ne doit pas contenir de caractères spéciaux comme $, @, #, etc.',
                 ])
+                
+                
             ],
         ])
         ->add('quantite', IntegerType::class, [

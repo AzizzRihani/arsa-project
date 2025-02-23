@@ -44,6 +44,14 @@ class Produit
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $quantiteReelle = null;  // New property for the real quantity after donation
 
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $dateAjout = null;
+
+    public function __construct()
+    {
+        $this->dateAjout = new \DateTime();
+    }
+
   
     public function getIdProduit(): ?int
     {
@@ -134,5 +142,16 @@ public function setCategorie(?CategorieProduit $categorie): static
         $this->quantiteReelle = $quantiteReelle;
         return $this;
     }
+    public function getDateAjout(): ?\DateTimeInterface
+    {
+        return $this->dateAjout;
+    }
+
+    public function setDateAjout(?\DateTimeInterface $dateAjout): static
+    {
+        $this->dateAjout = $dateAjout ?? new \DateTime(); // Ensures default value if null
+        return $this;
+    }
+    
 
 }
