@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CommentaireRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\UX\Turbo\Attribute\Broadcast;
 
 #[ORM\Entity(repositoryClass: CommentaireRepository::class)]
-#[Broadcast]
 class Commentaire
 {
     #[ORM\Id]
@@ -15,22 +13,18 @@ class Commentaire
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 55)]
     private ?string $contenu = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class ,inversedBy: 'Commentaire')]
-    #[ORM\JoinColumn(name: "idUser",referencedColumnName: "id")]
-    private ?User $user = null;
+    #[ORM\Column]
+    private ?int $idUser = null;
 
-    public function getuser(): ?string
-    {
-        return $this->user;
-    }
+    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    private ?Post $post = null;
 
-    public function setuser(?User $user): static
+    public function getId(): ?int
     {
-        $this->user = $user;
-        return $this;
+        return $this->id;
     }
 
     public function getContenu(): ?string
@@ -38,15 +32,34 @@ class Commentaire
         return $this->contenu;
     }
 
-    public function setContenu(?string $contenu): static
+    public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
 
         return $this;
     }
 
-    public function getId(): ?int
+    public function getIdUser(): ?int
     {
-        return $this->id;
+        return $this->idUser;
+    }
+
+    public function setIdUser(int $idUser): static
+    {
+        $this->idUser = $idUser;
+
+        return $this;
+    }
+
+    public function getPost(): ?Post
+    {
+        return $this->post;
+    }
+
+    public function setPost(?Post $Post): static
+    {
+        $this->post = $Post;
+
+        return $this;
     }
 }

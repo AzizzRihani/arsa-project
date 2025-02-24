@@ -6,9 +6,13 @@ use App\Entity\Event;
 use App\Entity\Association;
 use App\Entity\Location;
 use App\Entity\Donation;
+use App\Entity\Post;
 use App\Service\EmailService;
+use App\Form\PostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -391,4 +395,96 @@ final class AssociationController extends AbstractController
             ], 400);
         }
     }
+
+
+    #[Route('/article', name: 'app_article')]
+    public function association(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Création d'un nouvel article
+        $blogPost = new Post();
+        $form = $this->createForm(PostType::class, $blogPost);
+        $form->handleRequest($request);
+
+        // Vérification si le formulaire d'ajout est soumis
+       
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('image')->getData();
+        
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                    $blogPost->setImage($newFilename); // ✅ Lier le fichier au Post
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image : ' . $e->getMessage());
+                }
+            }
+            
+        
+            $entityManager->persist($blogPost);
+            $entityManager->flush();
+        
+            return $this->redirectToRoute('app_article');
+        }
+        
+
+        // Récupération des articles existants
+        $blogPosts = $entityManager->getRepository(Post::class)->findAll();
+
+        return $this->render('blog/blogback.html.twig', [
+            'form' => $form->createView(),
+            'blogPosts' => $blogPosts,
+        ]);
+    }
+
+
+  #[Route('/article/{id}/edit', name: 'app_article_edit')]
+    public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $imageFile */
+          $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                $imageFile->move($this->getParameter('images_directory'), $newFilename);
+                $post->setImage($newFilename);
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Article modifié avec succès.');
+            return $this->redirectToRoute('app_article');
+        }
+
+        return $this->render('blog/edit.html.twig', [
+            'form' => $form->createView(),
+            'post' => $post,
+        ]);
+    }
+
+
+
+
+ 
+    #[Route('/article/{id}/delete', name: 'app_article_delete', methods: ['POST'])]
+    public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $post->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($post);
+            $entityManager->flush();
+            $this->addFlash('success', 'Article supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('app_article');
+    }
+    
 }

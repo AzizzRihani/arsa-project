@@ -16,7 +16,7 @@ class HomeController extends AbstractController
     {
         return $this->render('baseMain.html.twig'); // Renders home page template
     }
-    #[Route('/admin', name: 'app_home_user')]
+    #[Route('/admin', name: 'app_home_admin')]
     public function admin(): Response
     {
         return $this->render('baseMain.html.twig'); // Renders home page template
